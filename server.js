@@ -5,7 +5,6 @@ app.use(express.json());
 
 let pixDB = {};
 
-// ⚠️ URL DO TEU SITE ONLINE
 const BASE_URL = "https://pix-encurtador.onrender.com";
 
 // página inicial
@@ -30,10 +29,22 @@ app.get("/", (req, res) => {
           display: inline-block;
           box-shadow: 0 0 20px rgba(0,0,0,0.1);
           border: 1px solid #ddd;
+          width: 400px;
+        }
+
+        textarea {
+          width: 100%;
+          height: 120px;
+          padding: 15px;
+          border-radius: 10px;
+          border: 1px solid #ccc;
+          margin-top: 15px;
+          font-size: 14px;
+          resize: none;
         }
 
         input {
-          width: 80%;
+          width: 100%;
           padding: 15px;
           border-radius: 10px;
           border: 1px solid #ccc;
@@ -44,22 +55,21 @@ app.get("/", (req, res) => {
         button {
           background: #22c55e;
           border: none;
-          padding: 15px 25px;
+          padding: 15px;
           font-size: 16px;
           color: white;
           border-radius: 10px;
           cursor: pointer;
+          margin-top: 15px;
+          width: 100%;
+        }
+
+        .link-box {
           margin-top: 20px;
         }
 
-        .link {
-          margin-top: 20px;
-          font-size: 16px;
-        }
-
-        a {
-          color: #2563eb;
-          text-decoration: none;
+        .copy-btn {
+          background: #2563eb;
         }
       </style>
     </head>
@@ -68,14 +78,16 @@ app.get("/", (req, res) => {
       <div class="box">
         <h2>💸 Gerador de Link Pix</h2>
 
-        <input id="pix" placeholder="Cole o código Pix aqui" />
-        <br>
+        <textarea id="pix" placeholder="Cole o código Pix aqui"></textarea>
+
         <input id="pedido" placeholder="Número do pedido" />
 
-        <br>
         <button onclick="gerar()">Gerar Link</button>
 
-        <div class="link" id="link"></div>
+        <div class="link-box" id="linkBox" style="display:none;">
+          <input id="link" readonly />
+          <button class="copy-btn" onclick="copiarLink()">📋 Copiar Link</button>
+        </div>
       </div>
 
       <script>
@@ -93,8 +105,14 @@ app.get("/", (req, res) => {
 
           const data = await res.json();
 
-          document.getElementById("link").innerHTML =
-            '<a href="' + data.link + '" target="_blank">' + data.link + '</a>';
+          document.getElementById("linkBox").style.display = "block";
+          document.getElementById("link").value = data.link;
+        }
+
+        function copiarLink() {
+          const link = document.getElementById("link").value;
+          navigator.clipboard.writeText(link);
+          alert("Link copiado!");
         }
       </script>
     </body>
@@ -126,95 +144,23 @@ app.get("/p/:code", (req, res) => {
 <head>
   <title>Pagamento Pix</title>
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-
-  <style>
-    body {
-      font-family: Arial;
-      background: #ffffff;
-      color: #111;
-      text-align: center;
-      padding: 40px;
-    }
-
-    .box {
-      background: #ffffff;
-      padding: 40px;
-      border-radius: 16px;
-      display: inline-block;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
-      border: 1px solid #ddd;
-      max-width: 400px;
-    }
-
-    .pedido {
-      font-weight: bold;
-      margin-bottom: 15px;
-    }
-
-    .steps {
-      text-align: left;
-      margin-top: 20px;
-      font-size: 14px;
-    }
-
-    .step {
-      margin-bottom: 10px;
-    }
-
-    canvas {
-      margin-top: 20px;
-      background: white;
-      padding: 10px;
-      border-radius: 10px;
-    }
-
-    button {
-      background: #22c55e;
-      border: none;
-      padding: 15px;
-      font-size: 16px;
-      color: white;
-      border-radius: 10px;
-      cursor: pointer;
-      margin-top: 25px;
-      width: 100%;
-    }
-
-    .ok {
-      margin-top: 10px;
-      color: #22c55e;
-      display: none;
-    }
-  </style>
 </head>
-
 <body>
-  <div class="box">
-    <h2>💸 Pagamento via Pix</h2>
+  <h2>Pagamento via Pix</h2>
+  <p>Pedido: ${data.pedido}</p>
 
-    <div class="pedido">Pedido: ${data.pedido || "-"}</div>
+  <canvas id="qrcode"></canvas>
+  <br><br>
 
-    <div class="steps">
-      <div class="step">1️⃣ Clique no botão abaixo para copiar o Pix</div>
-      <div class="step">2️⃣ Abra o app do seu banco</div>
-      <div class="step">3️⃣ Vá em Pix → Copia e Cola</div>
-      <div class="step">4️⃣ Cole o código e confirme o pagamento</div>
-    </div>
-
-    <canvas id="qrcode"></canvas>
-
-    <button onclick="copiar()">📋 Copiar código Pix</button>
-    <div class="ok" id="ok">✔ Copiado com sucesso</div>
-  </div>
+  <button onclick="copiar()">Copiar Pix</button>
 
   <script>
     const pix = "${data.pix}";
-
     QRCode.toCanvas(document.getElementById("qrcode"), pix);
 
     function copiar() {
       navigator.clipboard.writeText(pix);
-      document.getElementById("ok").style.display = "block";
+      alert("Copiado!");
     }
   </script>
 </body>
