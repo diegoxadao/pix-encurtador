@@ -5,6 +5,7 @@ app.use(express.json());
 
 let pixDB = {};
 
+// ⚠️ URL DO TEU SITE ONLINE
 const BASE_URL = "https://pix-encurtador.onrender.com";
 
 // página inicial
@@ -125,23 +126,95 @@ app.get("/p/:code", (req, res) => {
 <head>
   <title>Pagamento Pix</title>
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #ffffff;
+      color: #111;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .box {
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 16px;
+      display: inline-block;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      border: 1px solid #ddd;
+      max-width: 400px;
+    }
+
+    .pedido {
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .steps {
+      text-align: left;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .step {
+      margin-bottom: 10px;
+    }
+
+    canvas {
+      margin-top: 20px;
+      background: white;
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    button {
+      background: #22c55e;
+      border: none;
+      padding: 15px;
+      font-size: 16px;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 25px;
+      width: 100%;
+    }
+
+    .ok {
+      margin-top: 10px;
+      color: #22c55e;
+      display: none;
+    }
+  </style>
 </head>
+
 <body>
-  <h2>Pagamento via Pix</h2>
-  <p>Pedido: ${data.pedido}</p>
+  <div class="box">
+    <h2>💸 Pagamento via Pix</h2>
 
-  <canvas id="qrcode"></canvas>
-  <br><br>
+    <div class="pedido">Pedido: ${data.pedido || "-"}</div>
 
-  <button onclick="copiar()">Copiar Pix</button>
+    <div class="steps">
+      <div class="step">1️⃣ Clique no botão abaixo para copiar o Pix</div>
+      <div class="step">2️⃣ Abra o app do seu banco</div>
+      <div class="step">3️⃣ Vá em Pix → Copia e Cola</div>
+      <div class="step">4️⃣ Cole o código e confirme o pagamento</div>
+    </div>
+
+    <canvas id="qrcode"></canvas>
+
+    <button onclick="copiar()">📋 Copiar código Pix</button>
+    <div class="ok" id="ok">✔ Copiado com sucesso</div>
+  </div>
 
   <script>
     const pix = "${data.pix}";
+
     QRCode.toCanvas(document.getElementById("qrcode"), pix);
 
     function copiar() {
       navigator.clipboard.writeText(pix);
-      alert("Copiado!");
+      document.getElementById("ok").style.display = "block";
     }
   </script>
 </body>
