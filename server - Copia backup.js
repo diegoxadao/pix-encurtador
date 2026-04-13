@@ -5,9 +5,6 @@ app.use(express.json());
 
 let pixDB = {};
 
-// COLOCA AQUI O TOKEN DO TEU BOT
-const TELEGRAM_TOKEN = "8603857963:AAEIYLkuzAI6_UBq_p9t_owSP4j_2Po5E_E";
-
 // página inicial
 app.get("/", (req, res) => {
   res.send(`
@@ -306,38 +303,6 @@ app.get("/p/:code", (req, res) => {
     </body>
     </html>
   `);
-});
-
-// webhook do Telegram
-app.post("/telegram", async (req, res) => {
-  try {
-    const message = req.body.message;
-
-    if (!message || !message.text) {
-      return res.sendStatus(200);
-    }
-
-    const chatId = message.chat.id;
-    const text = message.text.trim();
-
-    console.log("Mensagem recebida no Telegram:", text);
-
-    await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: "Recebi sua mensagem: " + text
-      })
-    });
-
-    res.sendStatus(200);
-  } catch (error) {
-    console.error("Erro no Telegram:", error);
-    res.sendStatus(500);
-  }
 });
 
 const PORT = process.env.PORT || 3000;
