@@ -322,6 +322,16 @@ app.post("/telegram", async (req, res) => {
 
     console.log("Mensagem recebida no Telegram:", text);
 
+    let resposta = "Não entendi. Envie algo como: pagar 50";
+
+    if (text.toLowerCase().startsWith("pagar ")) {
+      const valor = text.split(" ")[1];
+
+      if (valor && !isNaN(valor)) {
+        resposta = "Recebi seu pedido de pagamento de R$ " + valor + ". Aguarde...";
+      }
+    }
+
     await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
       method: "POST",
       headers: {
@@ -329,7 +339,7 @@ app.post("/telegram", async (req, res) => {
       },
       body: JSON.stringify({
         chat_id: chatId,
-        text: "Recebi sua mensagem: " + text
+        text: resposta
       })
     });
 
